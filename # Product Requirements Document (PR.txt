@@ -1,0 +1,229 @@
+# Product Requirements Document (PRD) for PDF to PowerPoint Converter App
+
+## 1. Product Overview
+- **Product Name**: PDF to PPT Converter
+- **Version**: 1.0
+- **Date**: September 30, 2025
+- **Description**: A Python-based web application built with Streamlit that allows users to upload multiple PDFs (specifically 11 files named PDF0.pdf to PDF10.pdf or similar) and convert them into a single PowerPoint (PPTX) file. The app ensures PDFs are processed in chronological numerical order based on filenames, with each PDF page rendered as a full-slide image in the output presentation.
+- **Purpose**: To automate the conversion of sequentially named PDFs into an ordered PowerPoint deck for presentations, reports, or archiving.
+- **Target Users**: Individuals or teams on Windows PCs needing quick PDF-to-PPT conversions, such as students, professionals, or content creators. Assumes basic tech familiarity (e.g., running commands in VS Code).
+- **Platform**: Windows PC, local execution via VS Code and browser.
+- **Key Benefits**:
+  - Automatic sorting to maintain order (e.g., PDF0 before PDF1).
+  - No need for manual reordering or external tools.
+  - High-quality image rendering (300 DPI) for clear slides.
+  - Free and open-source dependencies.
+
+## 2. Task List
+The following tasks outline the steps to implement, test, and finalize the app. Each task includes estimated effort (low/medium/high) and dependencies, formatted with checkboxes for tracking completion.
+
+- [ ] **Task 1: Set Up Development Environment** (Effort: Low)
+  - **Description**: Prepare the development environment in VS Code on a Windows PC.
+  - **Steps**:
+    - Install Python 3.8+ if not already installed (download from python.org).
+    - Open VS Code and create a project folder (e.g., `pdf-to-ppt-app`).
+    - Create a virtual environment in the VS Code terminal: `python -m venv venv`.
+    - Activate the virtual environment: `venv\Scripts\activate`.
+    - Install required packages: `pip install streamlit pymupdf python-pptx pillow`.
+  - **Dependencies**: None
+
+- [ ] **Task 2: Implement Core Code** (Effort: Medium)
+  - **Description**: Write the Python script for the Streamlit app.
+  - **Steps**:
+    - Create a file `pdf_to_ppt.py` in VS Code.
+    - Copy the provided Python code (see Appendix) into the file, which includes:
+      - Imports and sorting function for numerical filename order (PDF0 to PDF10).
+      - Conversion logic using PyMuPDF to extract pages as images and python-pptx to create slides.
+      - Streamlit UI for multi-file upload, conversion button, and PPTX download.
+    - Optionally customize DPI or slide dimensions for quality or performance.
+  - **Dependencies**: Task 1
+
+- [ ] **Task 3: Test the App Locally** (Effort: Medium)
+  - **Description**: Verify the app works as expected with test PDFs.
+  - **Steps**:
+    - Run the app: `streamlit run pdf_to_ppt.py` in the VS Code terminal (opens http://localhost:8501 in browser).
+    - Prepare 11 test PDFs named PDF0.pdf to PDF10.pdf (e.g., one-page PDFs with distinct content for verification).
+    - Upload PDFs in random order; confirm the output PPTX has slides in correct order (PDF0 first, PDF10 last).
+    - Test edge cases: Single PDF, no PDFs, large PDFs (e.g., multi-page), non-numeric filenames (should sort to end).
+    - Check for errors: Ensure high DPI doesn't cause memory issues; test on Windows-specific paths.
+  - **Dependencies**: Task 2
+
+- [ ] **Task 4: Add Enhancements and Error Handling** (Effort: Medium)
+  - **Description**: Improve user experience and robustness.
+  - **Steps**:
+    - Add user feedback: Include Streamlit elements like progress bars or error messages (e.g., for no files uploaded).
+    - Improve sorting: Refine regex in `extract_number` if filenames vary (e.g., handle "PDF_01.pdf").
+    - Optimize performance: Add option for lower DPI if files are too large.
+    - Add logging: Use `st.write` or Python logging for debugging.
+  - **Dependencies**: Task 3
+
+- [ ] **Task 5: Document the App** (Effort: Low)
+  - **Description**: Create documentation for clarity and maintenance.
+  - **Steps**:
+    - Add comments to the code explaining key sections (e.g., sorting logic, conversion function).
+    - Create a `README.md` file in the project folder with:
+      - Installation instructions.
+      - Usage guide (how to run, upload PDFs, expected output).
+      - Troubleshooting tips (e.g., common errors on Windows).
+  - **Dependencies**: Task 2
+
+- [ ] **Task 6: Deploy or Package the App** (Effort: High, Optional)
+  - **Description**: Prepare the app for sharing or broader use.
+  - **Steps**:
+    - For local use: No further action needed.
+    - For sharing: Package as an executable using PyInstaller (`pip install pyinstaller`, then `pyinstaller --onefile pdf_to_ppt.py`).
+    - For web deployment: Host on Streamlit Sharing or a cloud service like Heroku (requires account setup and Git).
+    - Test deployment: Ensure it works on another Windows PC.
+  - **Dependencies**: Task 4
+
+- [ ] **Task 7: Final Review and Iteration** (Effort: Low)
+  - **Description**: Ensure the app meets all requirements and is bug-free.
+  - **Steps**:
+    - Review the app against this PRD to confirm all requirements are met.
+    - Gather feedback: Run it with sample users if possible.
+    - Iterate: Fix any bugs or add features based on tests (e.g., support for other file naming conventions).
+  - **Dependencies**: All previous tasks
+
+## 3. Features and Functionality
+- **Core Features**:
+  - Multi-file upload: Support for uploading up to 11+ PDFs at once.
+  - Filename-based sorting: Extract numerical parts from filenames (e.g., "0" from PDF0.pdf) and sort ascending. Non-numeric files appended at the end.
+  - Conversion: Extract each PDF page as a PNG image and insert as full-slide backgrounds in a new PPTX (one slide per page, widescreen 16:9 layout).
+  - Output: Downloadable PPTX file named "converted.pptx".
+- **User Interface**:
+  - Streamlit web app with:
+    - Title: "PDF to PowerPoint Converter".
+    - File uploader accepting .pdf files, multiple selection enabled.
+    - "Convert to PPTX" button.
+    - Spinner during conversion.
+    - Success message and download button upon completion.
+- **Non-Functional Requirements**:
+  - Performance: Handle 11 single-page PDFs in under 30 seconds; scale to multi-page PDFs without crashing (memory limit: assume 8GB+ RAM).
+  - Quality: Slides maintain original PDF aspect ratio, stretched to fit if needed.
+  - Error Handling: Graceful messages for invalid uploads (e.g., non-PDF files) or empty uploads.
+  - Security: Local app; no data transmission or storage.
+- **Out of Scope**:
+  - Editable text in PPTX (images only; no OCR).
+  - Mobile or cross-platform support (Windows-focused).
+  - Advanced features like theme selection or page cropping.
+
+## 4. User Stories
+- As a user, I want to upload multiple PDFs so I can convert them all at once.
+- As a user, I want the app to sort PDFs by numerical filename order (e.g., PDF0 to PDF10) so the PPTX slides are in the correct sequence without manual intervention.
+- As a user, I want a simple button to trigger conversion and download the result so the process is quick and intuitive.
+- As a user, I want high-quality slides so the content is readable in presentations.
+
+## 5. Technical Requirements
+- **Tech Stack**:
+  - Language: Python 3.8+.
+  - Libraries: Streamlit (UI), PyMuPDF (PDF reading), python-pptx (PPTX creation), Pillow (image handling), re (regex for sorting).
+  - No external APIs or internet required.
+- **Development Tools**: VS Code for editing; terminal for running.
+- **System Requirements**: Windows PC with Python installed; browser (e.g., Chrome) for Streamlit interface.
+- **Installation Instructions**:
+  1. Install dependencies via pip (see Task 1).
+  2. Run `streamlit run pdf_to_ppt.py`.
+- **Usage Instructions**:
+  1. Open the app in browser.
+  2. Upload PDFs (e.g., select PDF0.pdf to PDF10.pdf).
+  3. Click "Convert to PPTX".
+  4. Download the resulting PPTX and verify slide order.
+- **Testing Criteria**:
+  - Functional: Correct sorting, complete conversion, downloadable file.
+  - Usability: Intuitive UI, no crashes.
+  - Edge Cases: Zero files, mismatched filenames, large files.
+
+## 6. Assumptions and Risks
+- **Assumptions**: PDFs are primarily image/text-based; complex layouts may render imperfectly as images.
+- **Risks**: Memory issues with very large PDFs (mitigation: Lower DPI option). Windows-specific path errors (mitigation: Use relative paths).
+- **Dependencies**: All open-source libraries; no licensing issues.
+
+## 7. Success Metrics
+- App runs without errors on test PDFs.
+- Output PPTX opens correctly in Microsoft PowerPoint or compatible viewers.
+- User satisfaction: Quick conversion with accurate order.
+
+## 8. Appendix: Python Code for pdf_to_ppt.py
+Below is the complete code to be copied into `pdf_to_ppt.py`:
+
+```python
+import streamlit as st
+import fitz  # PyMuPDF
+from pptx import Presentation
+from pptx.util import Inches
+from PIL import Image
+import io
+import re  # For extracting numbers from filenames
+
+# Function to extract numerical part from filename for sorting
+def extract_number(filename):
+    match = re.search(r'\d+', filename)
+    return int(match.group()) if match else float('inf')  # If no number, put at end
+
+# Function to convert multiple PDFs to a single PPTX
+def convert_pdfs_to_pptx(pdf_files):
+    # Sort the PDF files based on the numerical part in their names
+    sorted_pdfs = sorted(pdf_files, key=lambda f: extract_number(f.name))
+    
+    # Create a new PowerPoint presentation
+    prs = Presentation()
+    
+    # Set slide dimensions to match a standard widescreen (16:9) aspect ratio
+    prs.slide_width = Inches(13.333)
+    prs.slide_height = Inches(7.5)
+    
+    for pdf_file in sorted_pdfs:
+        # Read PDF bytes
+        pdf_bytes = pdf_file.read()
+        
+        # Open the PDF from bytes
+        pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
+        
+        for page_num in range(len(pdf_document)):
+            # Render PDF page as image
+            page = pdf_document.load_page(page_num)
+            pix = page.get_pixmap(dpi=300)  # High DPI for better quality
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            
+            # Save image to bytes
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format="PNG")
+            img_bytes.seek(0)
+            
+            # Add a blank slide
+            slide_layout = prs.slide_layouts[6]  # Blank layout
+            slide = prs.slides.add_slide(slide_layout)
+            
+            # Add the image to fill the slide
+            left = top = Inches(0)
+            slide.shapes.add_picture(img_bytes, left, top, width=prs.slide_width, height=prs.slide_height)
+        
+        pdf_document.close()  # Clean up
+    
+    # Save PPTX to bytes
+    pptx_bytes = io.BytesIO()
+    prs.save(pptx_bytes)
+    pptx_bytes.seek(0)
+    
+    return pptx_bytes
+
+# Streamlit app
+st.title("PDF to PowerPoint Converter")
+
+uploaded_files = st.file_uploader("Upload PDF files (e.g., PDF0.pdf to PDF10.pdf)", type=["pdf"], accept_multiple_files=True)
+
+if uploaded_files:
+    st.write(f"Uploaded {len(uploaded_files)} PDF files.")
+    
+    if st.button("Convert to PPTX"):
+        with st.spinner("Converting..."):
+            pptx_bytes = convert_pdfs_to_pptx(uploaded_files)
+        
+        # Provide download button
+        st.download_button(
+            label="Download PPTX",
+            data=pptx_bytes,
+            file_name="converted.pptx",
+            mime="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        )
+        st.success("Conversion complete! Download your PPTX file.")
