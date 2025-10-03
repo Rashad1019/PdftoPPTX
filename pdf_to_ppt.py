@@ -45,9 +45,28 @@ def convert_pdfs_to_pptx(pdf_files):
             slide_layout = prs.slide_layouts[6]  # Blank layout
             slide = prs.slides.add_slide(slide_layout)
 
-            # Add the image to fill the slide
+            # Add the image to fill the slide while maintaining aspect ratio
             left = top = Inches(0)
-            slide.shapes.add_picture(img_bytes, left, top, width=prs.slide_width, height=prs.slide_height)
+
+            # Calculate dimensions to fit the slide while maintaining aspect ratio
+            slide_width = prs.slide_width
+            slide_height = prs.slide_height
+            img_width, img_height = img.size
+
+            # Calculate scaling factor to fit the image within the slide
+            scale_x = slide_width / img_width
+            scale_y = slide_height / img_height
+            scale = min(scale_x, scale_y)  # Use the smaller scale to maintain aspect ratio
+
+            # Calculate new dimensions
+            new_width = img_width * scale
+            new_height = img_height * scale
+
+            # Center the image on the slide
+            left = (slide_width - new_width) / 2
+            top = (slide_height - new_height) / 2
+
+            slide.shapes.add_picture(img_bytes, left, top, width=new_width, height=new_height)
 
         pdf_document.close()  # Clean up
 
